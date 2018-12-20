@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import SimpleMap from './SimpleMap.js'
+import TripPlanner from './TripPlanner.js'
 
 class App extends Component {
   render() {
@@ -9,7 +9,7 @@ class App extends Component {
         <header className="App-header">
           Something loaded!
         </header>
-        <SimpleMap />
+        <TripPlanner />
       </div>
     );
   }

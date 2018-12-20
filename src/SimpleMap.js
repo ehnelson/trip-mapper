@@ -1,50 +1,34 @@
 import React, { Component } from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 
-import jsonData from './scripts/aggregate.json';
-
 class SimpleMap extends Component<{}, State> {
-
-  getData() {
-    const loadData = () => JSON.parse(JSON.stringify(jsonData));
-    const locations = loadData()
-
-    var data = []
-    var lat, lng, loc, time, count
-    for(var index in locations){
-      loc = locations[index]
-
-      lat = parseFloat(loc.lat)
-      lng = parseFloat(loc.lng)
-      data.push({
-        pos: [lat, lng],
-        timeStart: parseInt(loc.timeStartMs,10),
-        timeEnd: parseInt(loc.timeEndMs,10),
-        count: parseInt(loc.count,10),
-      })
-    }
-    return data
+  constructor(props){
+    super(props)
+    this.handleMarkerClick = this.handleMarkerClick.bind(this)
   }
 
-  componentDidMount() {
-    // This will come in props later
-    this.setState({data: this.getData()})
+  handleMarkerClick(event){
+    const id = event.target.options.id
+    this.props.onSelectionChanged(id)
   }
 
   render() {
     //TODO: Debug display, show timestamps(?) for easy data curation
-    if (!this.state){
+    const data = this.props.data;
+    if (!data){
       return <div />
     }
+    //This behaves weird when you select something twice.  (shrug)
+    const center = (this.props.selected != null) ? data[this.props.selected] : data[0]
     return (
-      <Map className="Map" center={this.state.data[0].pos} zoom={13}>
+      <Map className="Map" center={center.pos} zoom={8}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {this.state.data.map((location) =>
-          <Marker key={location.time}  position={location.pos}>
-            <Popup> Count {location.count} entries from {(new Date(location.timeStart)).toLocaleDateString()} to {(new Date(location.timeEnd)).toLocaleDateString()}</Popup>
+        {data.map((loc) =>
+          <Marker key={loc.id} id={loc.id} position={loc.pos} onClick={this.handleMarkerClick}>
+            <Popup> Count {loc.count} entries from {(new Date(loc.timeStart)).toLocaleDateString()} to {(new Date(loc.timeEnd)).toLocaleDateString()}</Popup>
           </Marker>
         )}
       </Map>

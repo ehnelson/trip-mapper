@@ -13,4 +13,17 @@ code {
     monospace;
 }
 
-.Map { height: 600px; }
+.SideBar{
+	position: absolute;
+	width: 30%;
+	height: 98%;
+	background-color: #aaaaaaaa;
+	overflow-y: auto;
+ }
+
+.Map {
+	position: absolute;
+	width: 70%;
+	height: 800px;
+	right: 0px;
+}

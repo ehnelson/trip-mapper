@@ -5,7 +5,7 @@ from math import sin, cos, sqrt, atan2, radians
 fname = "LocationHistory.json"
 outName = 'aggregate.json'
 startTime = 1507705200000 # Oct 11th 2017.  Both in ms since epoch
-endTime =    1529650800000 # June 22 2018
+endTime =   1529650800000 # June 22 2018
 aggregateDistance = 1.0 # Aggregate locations less than 1 km apart
 aggregateMinimum = 80 # Minimum of 80 data entries to keep
 
