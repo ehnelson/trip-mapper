@@ -13,14 +13,14 @@ class SimpleMap extends Component<{}, State> {
     var lat, lng, loc, time, count
     for(var index in locations){
       loc = locations[index]
+
       lat = parseFloat(loc.lat)
       lng = parseFloat(loc.lng)
-      time = parseInt(loc.timeStartMs,10)
-      count = parseInt(loc.count,10)
       data.push({
         pos: [lat, lng],
-        time: time,
-        count: count,
+        timeStart: parseInt(loc.timeStartMs,10),
+        timeEnd: parseInt(loc.timeEndMs,10),
+        count: parseInt(loc.count,10),
       })
     }
     return data
@@ -32,6 +32,7 @@ class SimpleMap extends Component<{}, State> {
   }
 
   render() {
+    //TODO: Debug display, show timestamps(?) for easy data curation
     if (!this.state){
       return <div />
     }
@@ -43,7 +44,7 @@ class SimpleMap extends Component<{}, State> {
         />
         {this.state.data.map((location) =>
           <Marker key={location.time}  position={location.pos}>
-            <Popup> Count {location.count} entries on {(new Date(location.time)).toLocaleDateString()}</Popup>
+            <Popup> Count {location.count} entries from {(new Date(location.timeStart)).toLocaleDateString()} to {(new Date(location.timeEnd)).toLocaleDateString()}</Popup>
           </Marker>
         )}
       </Map>

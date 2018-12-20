@@ -4,8 +4,8 @@ from math import sin, cos, sqrt, atan2, radians
 # VARIABLES
 fname = "LocationHistory.json"
 outName = 'aggregate.json'
-startTime = 1506841200000 # Oct 1st 2017.  Both in ms since epoch
-endTime =   1530428400000 # July 1st 2018
+startTime = 1507705200000 # Oct 11th 2017.  Both in ms since epoch
+endTime =    1529650800000 # June 22 2018
 aggregateDistance = 1.0 # Aggregate locations less than 1 km apart
 aggregateMinimum = 80 # Minimum of 80 data entries to keep
 
@@ -57,6 +57,7 @@ def aggregateLocations(similar):
     lngSum = 0;
     timeLow = int(similar[0]["timestampMs"])
     timeHigh = timeLow
+    count = len(similar)
 
     for loc in similar:
         time = loc["date"]
@@ -66,16 +67,16 @@ def aggregateLocations(similar):
         timeHigh = max(timeHigh, time)
 
     return {
-        "lat": latSum / len(similar),
-        "lng": lngSum / len(similar),
+        "lat": latSum / count,
+        "lng": lngSum / count,
         "timeStartMs": timeLow,
         "timeEndMs": timeHigh,
-        "count": len(similar)
+        "count": count
     }
 
 # Aggregates consecutive entries if they are close enough.
 # Returns a new list of aggregated data.
-def aggregate(filtered):
+def aggregateConsecutive(filtered):
     last = filtered[0]
     result = []
     similar = []
@@ -91,22 +92,75 @@ def aggregate(filtered):
 
         similar.append(location)
         last = location
+
+    # Return list from oldest to newest data
+    result.reverse()
     return result
 
+
+# Combines two aggregate data points, expands time range to the min/max of both.
+# Returns a new dict
+def combineResults(old, newer):
+    oldCount = old["count"]
+    newerCount = newer["count"]
+    total = oldCount + newerCount
+
+    avgLat = (old["lat"] * oldCount + newer["lat"] * newerCount) / total
+    avgLng = (old["lng"] * oldCount + newer["lng"] * newerCount) / total
+
+    return {
+        "lat": avgLat,
+        "lng":  avgLng,
+        "timeStartMs": old["timeStartMs"],
+        "timeEndMs": newer["timeEndMs"],
+        "count": total
+    }
+
+# Finds and combines data points that weren't consecutive, but are still close in location
+# and less than a day apart.  IE two nights at a hostel become a single point.
+def aggregateAdjacent(data):
+    result = []
+    for index in range(len(data)):
+        x = data[index]
+
+        # Data results that have been combined will be removed from the dataset
+        if x is not None:
+            current = index + 1
+
+            #Finding data that starts less than a day ahead from our data's end
+            while current < len(data) and data[current] is not None and x["timeEndMs"] + DAY_MS > data[current]["timeStartMs"]:
+                if distanceKM(x, data[current]) < aggregateDistance:
+
+                    x = combineResults(x, data[current])
+                    data[current] = None
+
+                current += 1
+
+            result.append(x)
+
+    return result
 
 
 def main():
     with open(fname) as data_file: 
-        data = json.load(data_file)
-        if DEBUG: print("Input length %s" % len(data["locations"]))
+        data = json.load(data_file)["locations"]
+        if DEBUG: print("Input length %s" % len(data))
 
-    filtered = list(filter(keep, data["locations"]))
+    filtered = list(filter(keep, data))
     if DEBUG: print("Timerange length %s" % len(filtered))
   
-    aggregateResult = aggregate(filtered)
-    if DEBUG: print("Aggregated length %s" % len(aggregateResult))
+    consecutive = aggregateConsecutive(filtered)
+    if DEBUG: print("Aggregated length %s" % len(consecutive))
+
+    result = aggregateAdjacent(consecutive)
+    if DEBUG: print("Final length %s" % len(result))
+
+    # TODO - Curate Data.  Further aggregate in specific locations (but keeping existing data in a list)
+    #           IE returning PARIS, but you can expand.  Waiting until we start integrating photo info. 
+    # TODO - Blacklist of unwanted locations.  Some personal, some random road trip data.
+    # TODO - Blacklist Seattle?  
 
     with open(outName, "w") as out_file:
-        json.dump(aggregateResult, out_file, indent=2)
+        json.dump(result, out_file, indent=2)
 
 main() 
