@@ -8,6 +8,8 @@ startTime = 1507705200000 # Oct 11th 2017.  Both in ms since epoch
 endTime =   1529650800000 # June 22 2018
 aggregateDistance = 1.0 # Aggregate locations less than 1 km apart
 aggregateMinimum = 80 # Minimum of 80 data entries to keep
+furtherAggregateDistance = 5.0 #Area aggregate
+
 
 # CONSTANTS
 R = 6373.0 # approximate radius of earth in km
@@ -85,6 +87,7 @@ def aggregateConsecutive(filtered):
         delta = distanceKM(location, last)
 
         if delta > aggregateDistance:
+            # Starting a new location.  If the old one had enough data points, save it.
             if len(similar) > aggregateMinimum:
                 spot = aggregateLocations(similar)
                 result.append(spot)
@@ -100,42 +103,43 @@ def aggregateConsecutive(filtered):
 
 # Combines two aggregate data points, expands time range to the min/max of both.
 # Returns a new dict
-def combineResults(old, newer):
-    oldCount = old["count"]
-    newerCount = newer["count"]
-    total = oldCount + newerCount
+def combineResults(first, second):
+    firstCount = first["count"]
+    secondCount = second["count"]
+    total = firstCount + secondCount
 
-    avgLat = (old["lat"] * oldCount + newer["lat"] * newerCount) / total
-    avgLng = (old["lng"] * oldCount + newer["lng"] * newerCount) / total
+    avgLat = (first["lat"] * firstCount + second["lat"] * secondCount) / total
+    avgLng = (first["lng"] * firstCount + second["lng"] * secondCount) / total
 
     return {
         "lat": avgLat,
         "lng":  avgLng,
-        "timeStartMs": old["timeStartMs"],
-        "timeEndMs": newer["timeEndMs"],
+        "timeStartMs": min(first["timeStartMs"], second["timeStartMs"]),
+        "timeEndMs": max(first["timeEndMs"], second["timeEndMs"]),
         "count": total
     }
 
 # Finds and combines data points that weren't consecutive, but are still close in location
-# and less than a day apart.  IE two nights at a hostel become a single point.
-def aggregateAdjacent(data):
+# IE two nights at a hostel become a single point.
+# input toggles for distance and time.
+def aggregateFurther(data, distance, timeThreshold):
     result = []
+
     for index in range(len(data)):
         x = data[index]
+        added = False
 
-        # Data results that have been combined will be removed from the dataset
-        if x is not None:
-            current = index + 1
+        # For each data point, compare it with ones we've already processed.
+        for i in range(len(result)):
+            y = result[i]
 
-            #Finding data that starts less than a day ahead from our data's end
-            while current < len(data) and data[current] is not None and x["timeEndMs"] + DAY_MS > data[current]["timeStartMs"]:
-                if distanceKM(x, data[current]) < aggregateDistance:
+            # if we're close enough and within the given time range, combine and continue
+            if not added and distanceKM(x, y) < distance and (abs(y["timeStartMs"] - x["timeEndMs"]) < timeThreshold or  abs(x["timeStartMs"] - y["timeEndMs"]) < timeThreshold):
+                result[i] = combineResults(x, y)
+                added = True
 
-                    x = combineResults(x, data[current])
-                    data[current] = None
-
-                current += 1
-
+        # If we didn't find something to add this data point to, add it individualy to results.
+        if not added:
             result.append(x)
 
     return result
@@ -146,21 +150,22 @@ def main():
         data = json.load(data_file)["locations"]
         if DEBUG: print("Input length %s" % len(data))
 
-    filtered = list(filter(keep, data))
-    if DEBUG: print("Timerange length %s" % len(filtered))
+    data = list(filter(keep, data))
+    if DEBUG: print("Timerange length %s" % len(data))
   
-    consecutive = aggregateConsecutive(filtered)
-    if DEBUG: print("Aggregated length %s" % len(consecutive))
+    data = aggregateConsecutive(data)
+    if DEBUG: print("Aggregated length %s" % len(data))
 
-    result = aggregateAdjacent(consecutive)
-    if DEBUG: print("Final length %s" % len(result))
+    data = aggregateFurther(data, furtherAggregateDistance, DAY_MS * 7)
+    if DEBUG: print("Final length %s" % len(data))
 
+    # TODO - Unique ID tag to everything
     # TODO - Curate Data.  Further aggregate in specific locations (but keeping existing data in a list)
     #           IE returning PARIS, but you can expand.  Waiting until we start integrating photo info. 
     # TODO - Blacklist of unwanted locations.  Some personal, some random road trip data.
     # TODO - Blacklist Seattle?  
 
     with open(outName, "w") as out_file:
-        json.dump(result, out_file, indent=2)
+        json.dump(data, out_file, indent=2)
 
 main() 
