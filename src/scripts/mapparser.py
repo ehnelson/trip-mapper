@@ -10,6 +10,10 @@ aggregateDistance = 1.0 # Aggregate locations less than 1 km apart
 aggregateMinimum = 80 # Minimum of 80 data entries to keep
 furtherAggregateDistance = 5.0 #Area aggregate
 
+# Points east of this median will be displayed west of the western hemisphere.
+# I want East Asia displayed across the Pacific :)
+flipMedianDegree = 50
+
 
 # CONSTANTS
 R = 6373.0 # approximate radius of earth in km
@@ -144,6 +148,12 @@ def aggregateFurther(data, distance, timeThreshold):
 
     return result
 
+# Rotating certain data points around the map.
+def flipDataPoints(data):
+    for entry in data:
+        if entry["lng"] > flipMedianDegree:
+            entry["lng"] -= 360
+
 
 def main():
     with open(fname) as data_file: 
@@ -158,6 +168,8 @@ def main():
 
     data = aggregateFurther(data, furtherAggregateDistance, DAY_MS * 7)
     if DEBUG: print("Final length %s" % len(data))
+
+    flipDataPoints(data)
 
     # TODO - Unique ID tag to everything
     # TODO - Curate Data.  Further aggregate in specific locations (but keeping existing data in a list)

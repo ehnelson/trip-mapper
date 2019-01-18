@@ -8,7 +8,7 @@ class SideBar extends Component<{}, State> {
 
 	handleElementClick(event){
 	    const id = event.target.id
-	    this.props.onSelectionChanged(id)
+	    this.props.onSelectionChanged(id, false)
 	}
 
   	render() {

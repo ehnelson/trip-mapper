@@ -1,36 +1,54 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Map, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 
 class SimpleMap extends Component<{}, State> {
   constructor(props){
     super(props)
-    this.handleMarkerClick = this.handleMarkerClick.bind(this)
+    this.handleImageClick = this.handleImageClick.bind(this)
   }
 
-  handleMarkerClick(event){
+  handleImageClick(event){
     const id = event.target.options.id
-    this.props.onSelectionChanged(id)
+    this.props.onSelectionChanged(id, true)
   }
 
   render() {
     //TODO: Debug display, show timestamps(?) for easy data curation
     const data = this.props.data;
+    const img = this.props.imageData
+    var zoom = 8
     if (!data){
       return <div />
     }
-    //This behaves weird when you select something twice.  (shrug)
     const center = (this.props.selected != null) ? data[this.props.selected] : data[0]
+    if (this.props.selected != null) {
+      zoom = 11
+    }
+
+    // Draws a line with the location data
+    var pline = []
+    var index, loc
+    for (index in data){
+      loc = data[index]
+      pline.push(loc.pos)
+    }
+
+    //const flag = (this.props.selected !== 2) ? {display: 'none'} :{}
+    //This behaves weird when you select something twice.  (shrug)
     return (
-      <Map className="Map" center={center.pos} zoom={8}>
+      <Map className="Map" center={center.pos} zoom={zoom}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {data.map((loc) =>
-          <Marker key={loc.id} id={loc.id} position={loc.pos} onClick={this.handleMarkerClick}>
-            <Popup> Count {loc.count} entries from {(new Date(loc.timeStart)).toLocaleDateString()} to {(new Date(loc.timeEnd)).toLocaleDateString()}</Popup>
+        {img.map((pic) =>
+          <Marker key={pic.id} id={pic.id} position={pic.pos} onClick={this.handleImageClick}>
+              <Popup> Image taken on {(new Date(pic.time)).toLocaleDateString()}</Popup>
           </Marker>
         )}
+
+        <Polyline color="cyan" positions={pline} />
+
       </Map>
     )
   }
