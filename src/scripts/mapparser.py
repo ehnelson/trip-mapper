@@ -14,6 +14,8 @@ furtherAggregateDistance = 5.0 #Area aggregate
 # I want East Asia displayed across the Pacific :)
 flipMedianDegree = 50
 
+chapterFName = "chapters.json"
+
 
 # CONSTANTS
 R = 6373.0 # approximate radius of earth in km
@@ -155,6 +157,27 @@ def flipDataPoints(data):
             entry["lng"] -= 360
 
 
+# Reads in a chapter file, and organizes our data points into custom chapters.
+def chapterGrouping(data):
+    with open(chapterFName) as data_file: 
+        chapters = json.load(data_file)
+
+    for chap in chapters:
+        
+        start = int(chap["start"])
+        end = int(chap["end"])
+
+        children = []
+
+        for date in data:
+            if date["timeStartMs"] >= start and date["timeEndMs"] <= end:
+                children.append(date)
+        chap["children"] = children
+
+    return chapters
+
+
+
 def main():
     with open(fname) as data_file: 
         data = json.load(data_file)["locations"]
@@ -166,10 +189,13 @@ def main():
     data = aggregateConsecutive(data)
     if DEBUG: print("Aggregated length %s" % len(data))
 
-    data = aggregateFurther(data, furtherAggregateDistance, DAY_MS * 7)
+    data = aggregateFurther(data, furtherAggregateDistance, DAY_MS)
     if DEBUG: print("Final length %s" % len(data))
 
     flipDataPoints(data)
+
+    data = chapterGrouping(data)
+    if DEBUG: print("Chapter count %s" % len(data))
 
     # TODO - Unique ID tag to everything
     # TODO - Curate Data.  Further aggregate in specific locations (but keeping existing data in a list)

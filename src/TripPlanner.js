@@ -15,7 +15,7 @@ class TripPlanner extends Component {
     }
   }
 
-  handleSelectionChanged(id, image) {
+  handleSelectionChanged(id, image=false) {
     if (!image) {
       this.setState({selected: id})
     } else {
@@ -41,15 +41,36 @@ class TripPlanner extends Component {
     return result
   }
 
+  parseChapter(rawData){
+    var data ={
+      name: rawData.name,
+      description: rawData.description,
+      start: parseInt(rawData.start,10),
+      end: parseInt(rawData.end,10),
+      pictures: null
+    }
+
+    var locations = []
+    var loc, child
+    for(var index in rawData.children){
+      loc = rawData.children[index]
+      child = this.parseLocation(loc)
+      child.id = index
+      locations.push(child)
+    }
+    data.locations = locations
+    return data
+  }
+
   getData() {
     const loadData = () => JSON.parse(JSON.stringify(jsonData));
-    const locations = loadData()
+    const chapters = loadData()
 
     var data = []
-    var loc, child
-    for(var index in locations){
-      loc = locations[index]
-      child = this.parseLocation(loc)
+    var rawData, child
+    for(var index in chapters){
+      rawData = chapters[index]
+      child = this.parseChapter(rawData)
       child.id = index
       data.push(child)
     }

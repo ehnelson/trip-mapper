@@ -16,27 +16,30 @@ class SimpleMap extends Component<{}, State> {
     //TODO: Debug display, show timestamps(?) for easy data curation
     const data = this.props.data;
     const img = this.props.imageData
-    var zoom = 8
     if (!data){
       return <div />
     }
-    const center = (this.props.selected != null) ? data[this.props.selected] : data[0]
-    if (this.props.selected != null) {
-      zoom = 11
+
+    var locations, index
+    if (this.props.selected == null){
+      locations = []
+      for(index in this.props.data){
+        locations.push.apply(locations, data[index].locations)
+      }
+    } else {
+      locations = this.props.data[this.props.selected].locations
     }
 
     // Draws a line with the location data
     var pline = []
-    var index, loc
-    for (index in data){
-      loc = data[index]
-      pline.push(loc.pos)
+    for (index in locations){
+      pline.push(locations[index].pos)
     }
 
     //const flag = (this.props.selected !== 2) ? {display: 'none'} :{}
     //This behaves weird when you select something twice.  (shrug)
     return (
-      <Map className="Map" center={center.pos} zoom={zoom}>
+      <Map className="Map" bounds={pline} boundsOptions={{padding: [50, 50]}} >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
