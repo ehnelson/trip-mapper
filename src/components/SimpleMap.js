@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Map, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 
-class SimpleMap extends Component<{}, State> {
+class SimpleMap extends Component {
   constructor(props){
     super(props)
     this.handleImageClick = this.handleImageClick.bind(this)

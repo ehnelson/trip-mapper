@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import SimpleMap from './SimpleMap.js'
 import SideBar from './SideBar.js'
 import DataDisplay from './DataDisplay.js'
 
-import jsonData from './scripts/aggregate.json';
-import imageData from './scripts/image_metadata.json'
+import jsonData from '../scripts/aggregate.json'
+import imageData from '../scripts/image_metadata.json'
 
 class TripPlanner extends Component {
   constructor(props){

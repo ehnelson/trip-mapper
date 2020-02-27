@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class DataDisplay extends Component<{}, State> {
+class DataDisplay extends Component {
 	render() {
 	    var image = this.props.image
 	    if (!image){

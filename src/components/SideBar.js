@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class SideBar extends Component<{}, State> {
+class SideBar extends Component {
 	constructor(props){
 		super(props)
 		this.handleElementClick = this.handleElementClick.bind(this)
