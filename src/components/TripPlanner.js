@@ -4,23 +4,27 @@ import SideBar from './SideBar.js'
 import DataDisplay from './DataDisplay.js'
 
 import jsonData from '../scripts/aggregate.json'
-import imageData from '../scripts/image_metadata.json'
 
 class TripPlanner extends Component {
   constructor(props){
     super(props)
     this.handleSelectionChanged = this.handleSelectionChanged.bind(this)
     this.state = {
-      selected: null
+      chapter: null,
+      display: null
     }
   }
 
-  handleSelectionChanged(id, image=false) {
-    if (!image) {
-      this.setState({selected: id})
-    } else {
-      var display = this.state.imageData[id].file
+  handleSelectionChanged(chapterId, imageId=false) {
+    if (!imageId) {
       this.setState({
+        chapter: chapterId,
+        display: null
+      })
+    } else {
+      var display = this.state.data[chapterId].images[imageId].file
+      this.setState({
+        chapter: chapterId, //Maybe?
         display: display
       })
     }
@@ -37,17 +41,28 @@ class TripPlanner extends Component {
       count: parseInt(loc.count,10)
     }
 
-    // Eventually ingest images here with location data
     return result
   }
 
-  parseChapter(rawData){
+  parseImage(pic) {
+    var lat = parseFloat(pic.lat)
+    var lng = parseFloat(pic.lng)
+
+    var result = {
+      pos: [lat, lng],
+      time: parseInt(pic.timestamp),
+      file: pic.fileName
+    }
+    return result
+  }
+
+  parseChapter(rawData, chapterId){
     var data ={
       name: rawData.name,
       description: rawData.description,
       start: parseInt(rawData.start,10),
       end: parseInt(rawData.end,10),
-      pictures: null
+      id: chapterId
     }
 
     var locations = []
@@ -59,51 +74,38 @@ class TripPlanner extends Component {
       locations.push(child)
     }
     data.locations = locations
+
+    var images = []
+    var img, imgData
+    for(var imgIndex in rawData.images){
+      img = rawData.images[imgIndex]
+      imgData = this.parseImage(img)
+      imgData.id = imgIndex
+      imgData.chapterId = chapterId
+      images.push(imgData)
+    }
+    data.images = images
+
     return data
   }
 
   getData() {
-    const loadData = () => JSON.parse(JSON.stringify(jsonData));
-    const chapters = loadData()
+    const chapters = JSON.parse(JSON.stringify(jsonData))
 
     var data = []
     var rawData, child
     for(var index in chapters){
       rawData = chapters[index]
-      child = this.parseChapter(rawData)
-      child.id = index
+      child = this.parseChapter(rawData, index)
       data.push(child)
     }
-    return data
-  }
 
-  //Hacky!  Yay!
-  getImageData() {
-    const loadData = () => JSON.parse(JSON.stringify(imageData));
-    const locations = loadData()
-
-    var data = []
-    var index, pic, lat, lng, result
-
-    for(index in locations) {
-      pic = locations[index]
-      lat = parseFloat(pic.lat)
-      lng = parseFloat(pic.lng)
-      result = {
-        pos: [lat, lng],
-        time: parseInt(pic.timestamp),
-        file: pic.fileName,
-        id: index
-      }
-      data.push(result)
-    }
     return data
   }
 
   componentDidMount() {
     this.setState({
-      data: this.getData(),
-      imageData: this.getImageData()
+      data: this.getData()
     })
   }
 
@@ -111,13 +113,12 @@ class TripPlanner extends Component {
     return (
       <div className="TripPlanner">
         <SideBar 
-          selected = {this.state.selected}
+          selected = {this.state.chapter}
           data = {this.state.data}
           onSelectionChanged = {this.handleSelectionChanged}/>
         <SimpleMap 
           data = {this.state.data}
-          imageData = {this.state.imageData}
-          selected = {this.state.selected}
+          selected = {this.state.chapter}
           onSelectionChanged = {this.handleSelectionChanged} />
         <DataDisplay
           image = {this.state.display}/>

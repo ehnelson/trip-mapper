@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import json, sys, math
 from math import sin, cos, sqrt, atan2, radians
 
@@ -15,6 +17,7 @@ furtherAggregateDistance = 5.0 #Area aggregate
 flipMedianDegree = 50
 
 chapterFName = "chapters.json"
+imageMetadataFileName = "image_metadata.json"
 
 
 # CONSTANTS
@@ -61,8 +64,8 @@ def aggregateLocations(similar):
         print("This wasn't supposed to happen")
         return None
 
-    latSum = 0;
-    lngSum = 0;
+    latSum = 0
+    lngSum = 0
     timeLow = int(similar[0]["timestampMs"])
     timeHigh = timeLow
     count = len(similar)
@@ -173,8 +176,25 @@ def chapterGrouping(data):
             if date["timeStartMs"] >= start and date["timeEndMs"] <= end:
                 children.append(date)
         chap["children"] = children
+        chap["images"] = []
 
     return chapters
+
+def addImageMetadata(data):
+    with open(imageMetadataFileName) as data_file: 
+        images = json.load(data_file)
+    
+    if DEBUG: print("Images loaded %s" % len(images))
+    flipDataPoints(images)
+
+    for image in images:
+        timeStamp = int(image["timestamp"])
+
+        for chapter in data:
+            if int(chapter["start"]) <= timeStamp and timeStamp <= int(chapter["end"]):
+                chapter["images"].append(image)
+
+    return data
 
 
 
@@ -196,6 +216,8 @@ def main():
 
     data = chapterGrouping(data)
     if DEBUG: print("Chapter count %s" % len(data))
+
+    data = addImageMetadata(data)
 
     # TODO - Unique ID tag to everything
     # TODO - Curate Data.  Further aggregate in specific locations (but keeping existing data in a list)

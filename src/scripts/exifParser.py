@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import exifread, time, json
 import os
 import glob

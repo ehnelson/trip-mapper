@@ -7,27 +7,30 @@ class SimpleMap extends Component {
     this.handleImageClick = this.handleImageClick.bind(this)
   }
 
-  handleImageClick(event){
-    const id = event.target.options.id
-    this.props.onSelectionChanged(id, true)
+  handleImageClick = (event) => {
+    const chapterId = event.target.options.chapterId
+    const imageId = event.target.options.id
+    this.props.onSelectionChanged(chapterId, imageId)
   }
 
   render() {
     //TODO: Debug display, show timestamps(?) for easy data curation
-    const data = this.props.data;
-    const img = this.props.imageData
+    const {data, selected} = this.props;
     if (!data){
       return <div />
     }
 
-    var locations, index
-    if (this.props.selected == null){
+    var locations, index, img
+    if (selected == null){
       locations = []
-      for(index in this.props.data){
-        locations.push.apply(locations, data[index].locations)
+      img = []
+      for(index in data){
+        locations = locations.concat(data[index].locations)
+        img = img.concat(data[index].images)
       }
     } else {
-      locations = this.props.data[this.props.selected].locations
+      locations = data[selected].locations
+      img = data[selected].images
     }
 
     // Draws a line with the location data
@@ -45,7 +48,7 @@ class SimpleMap extends Component {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {img.map((pic) =>
-          <Marker key={pic.id} id={pic.id} position={pic.pos} onClick={this.handleImageClick}>
+          <Marker key={pic.id} id={pic.id} chapterId={pic.chapterId} position={pic.pos} onClick={this.handleImageClick}>
               <Popup> Image taken on {(new Date(pic.time)).toLocaleDateString()}</Popup>
           </Marker>
         )}
