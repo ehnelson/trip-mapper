@@ -8,7 +8,11 @@ class SimpleMap extends Component {
   }
 
   handleImageClick = (event) => {
-    const chapterId = event.target.options.chapterId
+    var chapterId = event.target.options.chapterId
+    if( this.props.selected) {
+      // This fixes the issue with double selection for now, will investigate later
+      chapterId = this.props.selected
+    }
     const imageId = event.target.options.id
     this.props.onSelectionChanged(chapterId, imageId)
   }
@@ -39,8 +43,6 @@ class SimpleMap extends Component {
       pline.push(locations[index].pos)
     }
 
-    //const flag = (this.props.selected !== 2) ? {display: 'none'} :{}
-    //This behaves weird when you select something twice.  (shrug)
     return (
       <Map className="Map" bounds={pline} boundsOptions={{padding: [50, 50]}} >
         <TileLayer
