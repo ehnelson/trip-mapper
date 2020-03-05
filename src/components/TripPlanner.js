@@ -15,8 +15,8 @@ class TripPlanner extends Component {
     }
   }
 
-  handleSelectionChanged = (chapterId, imageId=false) => {
-    if (!imageId) {
+  handleSelectionChanged = (chapterId, imageId=null) => {
+    if (!imageId || !chapterId) {
       this.setState({
         chapter: chapterId,
         display: null

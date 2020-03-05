@@ -1,19 +1,7 @@
 import React, { Component } from 'react';
+import SideBarElement from './SideBarElement';
 
 class SideBar extends Component {
-	constructor(props){
-		super(props)
-		this.handleElementClick = this.handleElementClick.bind(this)
-	}
-
-	handleElementClick(event){
-		if(event.target.className === "SideBarElement"){
-		    const id = event.target.id
-		    this.props.onSelectionChanged(id, false)
-		} else {
-	    	this.props.onSelectionChanged(null)
-		}
-	}
 
   	render() {
   		const data = this.props.data
@@ -21,13 +9,16 @@ class SideBar extends Component {
 	      return <div className="SideBar"> loading </div>
 	    }
   		return(
-  			<div className="SideBar" onClick={this.handleElementClick}> 
+  			<div className="SideBar"> 
   				<h1> Selected: {this.props.selected} </h1>
 	  			<div>
-	  				{data.map((loc) =>
-	  					<div className="SideBarElement" key={loc.id} id={loc.id}>
-	  						{loc.id}: {loc.name} {loc.locations.length}
-	  					</div>
+	  				{data.map((chapter) =>
+						<SideBarElement 
+						  chapter={chapter} 
+						  key={chapter.id} 
+						  selected={this.props.selected === chapter.id}
+						  onSelectionChanged={this.props.onSelectionChanged}
+						  />
 	  				)}
 	  			</div>
 	  		</div>

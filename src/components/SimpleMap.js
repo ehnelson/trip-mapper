@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import { Map, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 
 class SimpleMap extends Component {
-  constructor(props){
-    super(props)
-    this.handleImageClick = this.handleImageClick.bind(this)
-  }
-
+  
   handleImageClick = (event) => {
     var chapterId = event.target.options.chapterId
     if( this.props.selected) {
@@ -50,7 +46,7 @@ class SimpleMap extends Component {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {img.map((pic) =>
-          <Marker key={pic.id} id={pic.id} chapterId={pic.chapterId} position={pic.pos} onClick={this.handleImageClick}>
+          <Marker key={pic.id + " " + pic.chapterId} id={pic.id} chapterId={pic.chapterId} position={pic.pos} onClick={this.handleImageClick}>
               <Popup> Image taken on {(new Date(pic.time)).toLocaleDateString()}</Popup>
           </Marker>
         )}
