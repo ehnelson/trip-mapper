@@ -23,10 +23,11 @@ class SideBarElement extends Component {
 
     render() {
         const chapter = this.props.chapter;
+        const imageCount = chapter.images.length
         return (
             <div className="SideBarElement" key={chapter.id} id={chapter.id}>
                 <div onClick={this.handleElementClick}>
-                    {chapter.id}: {chapter.name} <Badge color="info">{chapter.locations.length}</Badge><Badge color="Light">{chapter.images.length}</Badge>
+                    {chapter.id}: {chapter.name} {imageCount > 0 ? <Badge color="info">{chapter.images.length}</Badge> : null}
                 </div>
                 <Collapse isOpen={this.props.selected}>
                     <ListGroup>

@@ -8,7 +8,6 @@ import {
   NavLink,
   NavbarText
 } from 'reactstrap';
-import './App.css';
 
 /* This will eventually contain more information for the webpage itself. 
     Keeping the map logic contained to the TripPlanner.  Maybe needs its own folder? */ 

@@ -16,10 +16,14 @@ code {
 .SideBar{
 	position: absolute;
 	width: 20%;
-	height: 98%;
+	height: 93%;
 	background-color: #aaaaaaaa;
 	overflow-y: auto;
  }
+
+.SideBarElement {
+	padding-left: 5px;
+}
 
 .Map {
 	position: absolute;

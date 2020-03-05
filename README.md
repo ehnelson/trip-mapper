@@ -13,4 +13,6 @@ In the project directory, you can run:
 ### `npm install`
 ### `npm start`
 
+Note this also requires setup to format your data, (downloading location data from google, selecting images, tweaking the settings in the python script, and running two scripts), that I am not going into detail on, as this will probably change soon!
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
