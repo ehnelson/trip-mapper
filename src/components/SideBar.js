@@ -10,17 +10,14 @@ class SideBar extends Component {
 	    }
   		return(
   			<div className="SideBar"> 
-  				<h1> Selected: {this.props.selected} </h1>
-	  			<div>
-	  				{data.map((chapter) =>
-						<SideBarElement 
-						  chapter={chapter} 
-						  key={chapter.id} 
-						  selected={this.props.selected === chapter.id}
-						  onSelectionChanged={this.props.onSelectionChanged}
-						  />
-	  				)}
-	  			</div>
+				{data.map((chapter) =>
+					<SideBarElement 
+						chapter={chapter} 
+						key={chapter.id} 
+						selected={this.props.selected === chapter.id}
+						onSelectionChanged={this.props.onSelectionChanged}
+						/>
+				)}
 	  		</div>
 	  	)
   	}

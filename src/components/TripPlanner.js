@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+
 import SimpleMap from './SimpleMap.js'
 import SideBar from './SideBar.js'
 import DataDisplay from './DataDisplay.js'
@@ -6,6 +7,12 @@ import DataDisplay from './DataDisplay.js'
 import jsonData from '../scripts/aggregate.json'
 import parseData from '../utils/DataParser'
 
+
+/*
+  This class contains most of the logic for the app.
+  It will parse our data and pass down to children.
+  It also maintains selection state. 
+*/
 class TripPlanner extends Component {
   constructor(props){
     super(props)
@@ -15,21 +22,22 @@ class TripPlanner extends Component {
     }
   }
 
+  // Select a given chapter, or image if desired.
   handleSelectionChanged = (chapterId, imageId=null) => {
-    if (!imageId || !chapterId) {
-      this.setState({
-        chapter: chapterId,
-        display: null
-      })
-    } else {
-      var display = this.state.data[chapterId].images[imageId].file
-      this.setState({
-        chapter: chapterId,
-        display: display
-      })
+    var display = null
+    if (imageId && chapterId) {
+      display = this.state.data[chapterId].images[imageId].file
     }
+    // Always set chapterID, even if null.
+    // Set a display element if possible.
+    this.setState({
+      chapter: chapterId,
+      display: display
+    })
   }
 
+  // Once the component has been added to the page, we will parse the location/image data
+  // and save it into state.
   componentDidMount() {
     const rawData = JSON.parse(JSON.stringify(jsonData))
     const data = parseData(rawData)

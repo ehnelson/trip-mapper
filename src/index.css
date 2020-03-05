@@ -8,27 +8,40 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-
 .SideBar{
 	position: absolute;
 	width: 20%;
 	height: 93%;
 	background-color: #aaaaaaaa;
 	overflow-y: auto;
+	padding-top: 20px;
  }
 
 .SideBarElement {
 	padding-left: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+.SideBarElement .btn {
+	text-align: left;
+	margin-bottom: 5px;
+}
+
+.SideBarImageList {
+	margin-left: 10px;
+}
+
+.SideBarElement .badge {
+	float: right;
+	vertical-align: text-bottom;
 }
 
 .Map {
 	position: absolute;
 	width: 80%;
-	height: 500px;
+	height: 400px;
 	right: 0px;
 }
 
@@ -39,6 +52,7 @@ code {
 	top: 400px;
 	right: 0px;
 }
+
 .ImageContainer {
 	width:100%;
     height:100%;

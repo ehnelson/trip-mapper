@@ -20,27 +20,34 @@ class SimpleMap extends Component {
       return <div />
     }
 
-    var locations, index, img
+    var locations = []
+    var index, img
     if (selected == null){
-      locations = []
       img = []
       for(index in data){
-        locations = locations.concat(data[index].locations)
+        locations.push(data[index].locations)
         img = img.concat(data[index].images)
       }
     } else {
-      locations = data[selected].locations
+      locations.push(data[selected].locations)
       img = data[selected].images
     }
 
     // Draws a line with the location data
     var pline = []
     for (index in locations){
-      pline.push(locations[index].pos)
+      pline.push(locations[index].map((ch)=>ch.pos))
     }
+    index = 0;
 
     return (
-      <Map className="Map" bounds={pline} boundsOptions={{padding: [50, 50]}} >
+      <Map 
+          className="Map" 
+          ref="map" 
+          animate={true} 
+          duration={2}
+          bounds={pline} 
+          boundsOptions={{padding: [50, 50]}}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -50,8 +57,9 @@ class SimpleMap extends Component {
               <Popup> Image taken on {(new Date(pic.time)).toLocaleDateString()}</Popup>
           </Marker>
         )}
-
-        <Polyline color="cyan" positions={pline} />
+        {pline.map((ch) =>
+          <Polyline color="cyan" key={index++} positions={ch} />
+        )}
 
       </Map>
     )
