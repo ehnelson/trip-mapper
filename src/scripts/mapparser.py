@@ -2,40 +2,30 @@
 
 import json, sys, math
 from math import sin, cos, sqrt, atan2, radians
+from exifParser import exifParse
 
-# VARIABLES
-fname = "LocationHistory.json"
+# Files
+fname = "FilteredLocationHistory.json"
 outName = 'aggregate.json'
-startTime = 1507705200000 # Oct 11th 2017.  Both in ms since epoch
-endTime =   1529650800000 # June 22 2018
+chapterFName = "chapters.json"
+imageMetadataFileName = "image_metadata.json"
+img_dir = "../../public/" # Enter Directory of all images 
+
+# Runtime constants
 aggregateDistance = 1.0 # Aggregate locations less than 1 km apart
 aggregateMinimum = 80 # Minimum of 80 data entries to keep
-furtherAggregateDistance = 5.0 #Area aggregate
+furtherAggregateDistance = 1.0 #Area aggregate
 
 # Points east of this median will be displayed west of the western hemisphere.
 # I want East Asia displayed across the Pacific :)
 flipMedianDegree = 50
 
-chapterFName = "chapters.json"
-imageMetadataFileName = "image_metadata.json"
 
 
 # CONSTANTS
 R = 6373.0 # approximate radius of earth in km
 DAY_MS = 86400000 # Day in milliseconds
 DEBUG = True
-
-#Filter out entries out of our range
-def keep(loc):
-    date = int(loc["timestampMs"])
-    if startTime < date and date < endTime:
-        # Only bother transforming lat/lng data for good entries.
-        loc['lat'] = loc["latitudeE7"] / 1e7
-        loc['lng'] = loc["longitudeE7"] / 1e7
-        loc['date'] = date
-        return True
-    return False
-
 
 # Math from https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
 # Calculates the distance between two lat,lng points in kilometers.  
@@ -181,31 +171,40 @@ def chapterGrouping(data):
     return chapters
 
 def addImageMetadata(data):
-    with open(imageMetadataFileName) as data_file: 
-        images = json.load(data_file)
+    images = exifParse(img_dir)
     
     if DEBUG: print("Images loaded %s" % len(images))
     flipDataPoints(images)
 
     for image in images:
-        timeStamp = int(image["timestamp"])
+        timeStamp = image["timestamp"]
 
         for chapter in data:
             if int(chapter["start"]) <= timeStamp and timeStamp <= int(chapter["end"]):
                 chapter["images"].append(image)
 
+    # This adds image location data into the timeline.  It looks neat for now but a little busy
+    # And I don't think its completely necessary.  Will review once I add more images into the data.
+    for chapter in data:
+        for image in chapter["images"]:
+            imageLoc = {
+                "lat": image["lat"],
+                "lng":  image["lng"],
+                "timeStartMs": image["timestamp"],
+                "timeEndMs": image["timestamp"],
+                "count": 1
+            }
+            chapter["children"].append(imageLoc)
+        chapter["children"].sort(key=lambda x: x["timeEndMs"], reverse=True)
     return data
 
 
 
 def main():
     with open(fname) as data_file: 
-        data = json.load(data_file)["locations"]
+        data = json.load(data_file)
         if DEBUG: print("Input length %s" % len(data))
 
-    data = list(filter(keep, data))
-    if DEBUG: print("Timerange length %s" % len(data))
-  
     data = aggregateConsecutive(data)
     if DEBUG: print("Aggregated length %s" % len(data))
 

@@ -5,10 +5,6 @@ import os
 import glob
 import operator
 
-img_dir = "../../public/" # Enter Directory of all images 
-outName = "image_metadata.json"
-
-
 # Stolen very rudely from https://gist.github.com/snakeye/fdc372dbf11370fe29eb
 # based on https://gist.github.com/erans/983821
 def _get_if_exist(data, key):
@@ -65,7 +61,7 @@ def get_exif_time(exif_data):
 
 
 
-def main():
+def exifParse(img_dir):
     data_path = os.path.join(img_dir,'*g')
     files = glob.glob(data_path)
     results = []
@@ -87,7 +83,4 @@ def main():
 
     results.sort(key=operator.itemgetter('timestamp'))
 
-    with open(outName, "w") as out_file:
-        json.dump(results, out_file, indent=2)
-
-main()
+    return results
