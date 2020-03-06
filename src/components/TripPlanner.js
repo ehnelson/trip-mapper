@@ -18,21 +18,17 @@ class TripPlanner extends Component {
     super(props)
     this.state = {
       chapter: null,
-      display: null
+      image: null
     }
   }
 
   // Select a given chapter, or image if desired.
   handleSelectionChanged = (chapterId, imageId=null) => {
-    var display = null
-    if (imageId && chapterId) {
-      display = this.state.data[chapterId].images[imageId].file
-    }
     // Always set chapterID, even if null.
     // Set a display element if possible.
     this.setState({
       chapter: chapterId,
-      display: display
+      image: imageId
     })
   }
 
@@ -58,7 +54,10 @@ class TripPlanner extends Component {
           selected = {this.state.chapter}
           onSelectionChanged = {this.handleSelectionChanged} />
         <DataDisplay
-          image = {this.state.display}/>
+          data = {this.state.data}
+          selected = {this.state.chapter}
+          onSelectionChanged = {this.handleSelectionChanged} 
+          image = {Number(this.state.image)}/>
       </div>
     );
   }

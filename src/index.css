@@ -51,9 +51,27 @@ body {
 .Display {
 	position: absolute;
 	width: 80%;
-	height: 400px;
-	top: 400px;
+	height: 350px;
+	top: 456px;
 	right: 0px;
+}
+.DisplayText{
+	float: left;
+	width: 50%;
+}
+.ImageCarousel {
+	float: right;
+	height: 350px;
+	width: 50%;
+	background-color:  #aaaaaaaa;
+}
+
+.ImageCarousel img {
+	display: block;
+	max-height: 350px;
+	width: auto !important;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .ImageContainer {
