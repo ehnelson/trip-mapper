@@ -48,11 +48,13 @@ class TripPlanner extends Component {
         <SideBar 
           data = {this.state.data}
           selected = {this.state.chapter}
-          onSelectionChanged = {this.handleSelectionChanged}/>
+          onSelectionChanged = {this.handleSelectionChanged}
+          image = {Number(this.state.image)}/>
         <SimpleMap 
           data = {this.state.data}
           selected = {this.state.chapter}
-          onSelectionChanged = {this.handleSelectionChanged} />
+          onSelectionChanged = {this.handleSelectionChanged}
+          image = {Number(this.state.image)} />
         <DataDisplay
           data = {this.state.data}
           selected = {this.state.chapter}

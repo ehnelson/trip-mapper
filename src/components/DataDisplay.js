@@ -40,9 +40,9 @@ class DataDisplay extends Component {
 		if(this.props.selected){
 			images = this.props.data[this.props.selected].images
 		}
-	    if (!images){
+		if (!images){
 			//Default nothing selected state.  Should put more here!
-	      return <div className="Display"/>
+	    	return <div className="Display"/>
 		}
 		var key = 0;
 		const slides = images.map((image) => {
@@ -57,26 +57,26 @@ class DataDisplay extends Component {
 			);
 		})
 
-	    return (
-	      <div className="Display">
-			<div className="DisplayText">
-				{this.props.data[this.props.selected].description}
-			</div>
-			<Carousel
-				className="ImageCarousel" 
-				activeIndex={this.props.image}
-				next={this.next}
-				previous={this.previous}
-				interval={false}
-			>
-				<CarouselIndicators items={slides} activeIndex={this.props.image} onClickHandler={this.setActiveIndex} />
-				{slides}
-				<CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />
-				<CarouselControl direction="next" directionText="Next" onClickHandler={this.next} />
+		return (
+	    	<div className="Display">
+				<div className="DisplayText">
+					{this.props.data[this.props.selected].description}
+				</div>
+				<Carousel
+					className="ImageCarousel" 
+					activeIndex={this.props.image}
+					next={this.next}
+					previous={this.previous}
+					interval={false}
+				>
+					<CarouselIndicators items={slides} activeIndex={this.props.image} onClickHandler={this.setActiveIndex} />
+					{slides}
+					<CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />
+					<CarouselControl direction="next" directionText="Next" onClickHandler={this.next} />
 				</Carousel>
-	      </div>
-	    )
-	  }
+	    	</div>
+		)
+	}
 }	
 
 export default DataDisplay

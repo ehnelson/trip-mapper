@@ -39,15 +39,22 @@ class SimpleMap extends Component {
       pline.push(locations[index].map((ch)=>ch.pos))
     }
     index = 0;
+    var mapProps = {
+      className: "Map",
+      ref: "map",
+      animate: true, 
+      duration: 2
+    }
+    if(this.props.image !== null && this.props.image !== undefined && img.length > 0){
+      mapProps.center = img[this.props.image].pos
+      mapProps.zoom = 10
+    } else {
+      mapProps.bounds = pline
+      mapProps.boundsOptions= {padding: [50, 50]}
+    }
 
     return (
-      <Map 
-          className="Map" 
-          ref="map" 
-          animate={true} 
-          duration={2}
-          bounds={pline} 
-          boundsOptions={{padding: [50, 50]}}>
+      <Map {...mapProps}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

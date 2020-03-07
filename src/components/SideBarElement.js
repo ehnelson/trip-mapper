@@ -40,7 +40,13 @@ class SideBarElement extends Component {
                 <Collapse isOpen={this.props.selected}>
                     <ListGroup className="SideBarImageList">
 	  				    {chapter.images.map((image) =>
-                            <ListGroupItem key={image.id} onClick={()=>this.handleElementClick(image.id)}>{image.file}</ListGroupItem>
+                            <ListGroupItem 
+                                color={this.props.image === Number(image.id)? "info" : ''}
+                                key={image.id} 
+                                onClick={()=>this.handleElementClick(image.id)}
+                            >
+                                {image.file}
+                            </ListGroupItem>
                         )}
                     </ListGroup>
                 </Collapse>

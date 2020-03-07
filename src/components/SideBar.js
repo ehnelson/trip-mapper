@@ -15,6 +15,7 @@ class SideBar extends Component {
 						chapter={chapter} 
 						key={chapter.id} 
 						selected={this.props.selected === chapter.id}
+						image = {Number(this.props.image)}
 						onSelectionChanged={this.props.onSelectionChanged}
 						/>
 				)}
