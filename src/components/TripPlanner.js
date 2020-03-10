@@ -26,6 +26,9 @@ class TripPlanner extends Component {
   handleSelectionChanged = (chapterId, imageId=null) => {
     // Always set chapterID, even if null.
     // Set a display element if possible.
+    if(imageId !== null){
+      imageId = Number(imageId)
+    }
     this.setState({
       chapter: chapterId,
       image: imageId
@@ -49,17 +52,17 @@ class TripPlanner extends Component {
           data = {this.state.data}
           selected = {this.state.chapter}
           onSelectionChanged = {this.handleSelectionChanged}
-          image = {Number(this.state.image)}/>
+          image = {this.state.image}/>
         <SimpleMap 
           data = {this.state.data}
           selected = {this.state.chapter}
           onSelectionChanged = {this.handleSelectionChanged}
-          image = {Number(this.state.image)} />
+          image = {this.state.image} />
         <DataDisplay
           data = {this.state.data}
           selected = {this.state.chapter}
           onSelectionChanged = {this.handleSelectionChanged} 
-          image = {Number(this.state.image)}/>
+          image = {this.state.image}/>
       </div>
     );
   }

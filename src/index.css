@@ -58,7 +58,14 @@ body {
 .DisplayText{
 	float: left;
 	width: 50%;
+	height: 100%;
 }
+
+.DisplayTextTitle{
+	font-weight: bold;
+	font-size: 24px;
+}
+
 .ImageCarousel {
 	float: right;
 	height: 350px;

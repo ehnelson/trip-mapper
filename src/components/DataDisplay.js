@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { 
+	Card,
+	CardText,
+	CardTitle,
 	Carousel,
 	CarouselControl,
 	CarouselIndicators,
@@ -44,6 +47,7 @@ class DataDisplay extends Component {
 			//Default nothing selected state.  Should put more here!
 	    	return <div className="Display"/>
 		}
+		var activeIndex = (this.props.image !== null ? this.props.image : 0)
 		var key = 0;
 		const slides = images.map((image) => {
 			return (
@@ -59,17 +63,21 @@ class DataDisplay extends Component {
 
 		return (
 	    	<div className="Display">
-				<div className="DisplayText">
-					{this.props.data[this.props.selected].description}
+				<Card className="DisplayText" body outline color="info">
+					<CardTitle className="DisplayTextTitle">{this.props.data[this.props.selected].name}</CardTitle>
+					<CardText>{this.props.data[this.props.selected].description}</CardText>
+				</Card>
+				<div >
+					
 				</div>
 				<Carousel
 					className="ImageCarousel" 
-					activeIndex={this.props.image}
+					activeIndex={activeIndex}
 					next={this.next}
 					previous={this.previous}
 					interval={false}
 				>
-					<CarouselIndicators items={slides} activeIndex={this.props.image} onClickHandler={this.setActiveIndex} />
+					<CarouselIndicators items={slides} activeIndex={activeIndex} onClickHandler={this.setActiveIndex} />
 					{slides}
 					<CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />
 					<CarouselControl direction="next" directionText="Next" onClickHandler={this.next} />
